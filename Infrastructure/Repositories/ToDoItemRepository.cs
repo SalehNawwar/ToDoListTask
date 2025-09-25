@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Repositories
 {
@@ -32,60 +33,83 @@ namespace Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task<PagedResult<ToDoItem>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PagedResult<ToDoItem>> GetAllAsync(ToDoItemRequestParameters parameters)
         {
+            var query = _db.ToDoItems.AsQueryable();
+
+            if(parameters.UserAssignedId.HasValue)
+            {
+                query = query.Where(item => item.AssignedToUserId == parameters.UserAssignedId.Value);
+            }
+
+            if (parameters.IsCompleted.HasValue)
+            {
+                query = query.Where(item => item.IsCompleted ==  parameters.IsCompleted.Value);
+            }
+
+            if (parameters.PriorityLevel.HasValue)
+            {
+                query = query.Where(item=>item.PriorityLevel == parameters.PriorityLevel.Value);
+            }
+
+            if (parameters.From.HasValue)
+            {
+                query = query.Where(item => item.DueDate >= parameters.From.Value);
+            }
+
+            if (parameters.To.HasValue)
+            {
+                query = query.Where(item => item.DueDate <= parameters.To.Value);
+            }
+
+            if (parameters.Title.IsNullOrEmpty() == false)
+            {
+                query = query.Where(item => item.Title == parameters.Title);
+            }
+
+            if (parameters.Description.IsNullOrEmpty() == false)
+            {
+                query = query.Where(item => item.Description == parameters.Description);
+            }
+
+            switch (parameters.SortingParameter)
+            {
+                case SortingParameters.None:
+                    break;
+
+                case SortingParameters.ByTitleAscending:
+                    query = query.OrderBy(item => item.Title);
+                    break;
+
+                case SortingParameters.ByTitleDescending:
+                    query = query.OrderByDescending(item => item.Title);
+                    break;
+
+                case SortingParameters.ByPriorityLevelAscending:
+                    query = query.OrderBy(item => item.PriorityLevel);
+                    break;
+
+                case SortingParameters.ByPriorityLevelDescending:
+                    query = query.OrderByDescending(item => item.PriorityLevel);
+                    break;
+            }
+
             var totalCount = await _db.ToDoItems.CountAsync();
+
             var items = await _db.ToDoItems
-                                 .Skip((pageNumber - 1) * pageSize)
-                                 .Take(pageSize)
+                                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                                 .Take(parameters.PageSize)
                                  .ToListAsync();
 
             return new PagedResult<ToDoItem>
             {
                 Items = items,
                 TotalCount = totalCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize
+                PageNumber = parameters.PageNumber,
+                PageSize = parameters.PageSize
             };
         }
 
-        public async Task<PagedResult<ToDoItem>> GetByAssignedIdAsync(long userId, int pageNumber, int pageSize)
-        {
-            var query = _db.ToDoItems.Where(t => t.AssignedToUserId == userId);
-
-            var totalCount = await query.CountAsync();
-            
-            var items = await query
-                     .Skip((pageNumber - 1) * pageSize)
-                     .Take(pageSize)
-                     .ToListAsync();
-
-            return new PagedResult<ToDoItem>
-            {
-                Items = items,
-                TotalCount = totalCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
-        }
-
-        public async Task<PagedResult<ToDoItem>> GetByCreatorIdAsync(long userId, int pageNumber, int pageSize)
-        {
-            var query = _db.ToDoItems.Where(t => t.CreatedByUserId == userId);
-
-            var totalCount = await query.CountAsync();
-            var items = await query.Skip((pageNumber - 1) * pageSize)
-                                   .Take(pageSize)
-                                   .ToListAsync();
-
-            return new PagedResult<ToDoItem>
-            {
-                Items = items,
-                TotalCount = totalCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
-        }
 
         public async Task<ToDoItem?> GetByIdAsync(long id)
         {
@@ -101,30 +125,6 @@ namespace Infrastructure.Repositories
         public async Task<int> SaveChangesAsync()
         {
             return await _db.SaveChangesAsync();
-        }
-
-        public async Task<PagedResult<ToDoItem>> SearchByTitleAsync(string title, int pageNumber, int pageSize)
-        {
-            var query = _db.ToDoItems.Where(t => 
-                t.Title
-                .Trim()
-                .ToLower()
-                .Contains(title.Trim().ToLower()
-            ));
-
-            var totalCount = await query.CountAsync();
-
-            var items = await _db.ToDoItems
-                     .Skip((pageNumber - 1) * pageSize)
-                     .Take(pageSize)
-                     .ToListAsync();
-            return new PagedResult<ToDoItem>
-            {
-                Items = items,
-                TotalCount = totalCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
         }
 
         public Task UpdateAsync(ToDoItem item)

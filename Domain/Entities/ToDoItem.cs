@@ -12,7 +12,7 @@ namespace Domain.Entities
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public PriorityLevels PriorityLevel { get; set; }
-        public DateTime DueDate {  get; set; }
+        public DateTime? DueDate {  get; set; }
         public bool IsCompleted { get; set; }
         public long? CreatedByUserId { get; set; }
         public User? CreatedByUser { get; set; }

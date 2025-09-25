@@ -8,9 +8,7 @@ namespace Application.Interfaces.Repositories
     {
         IQueryable<User> Query();
         Task<User?> GetByIdAsync(long id);
-        Task<User?> GetByUserNameAsync(string userName);
-
-        Task<PagedResult<User>> GetAllAsync(int pageNumber, int pageSize);
+        Task<PagedResult<User>> GetAllAsync(UserRequestParameters parameters);
 
         Task AddAsync(User user);
         Task UpdateAsync(User user);

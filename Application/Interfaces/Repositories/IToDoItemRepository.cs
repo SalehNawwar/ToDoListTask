@@ -9,11 +9,7 @@ namespace Application.Interfaces.Repositories
         Task<ToDoItem?> GetByIdAsync(long id);
 
         IQueryable<ToDoItem> Query();
-        Task<PagedResult<ToDoItem>> GetAllAsync(int pageNumber, int pageSize);
-
-        Task<PagedResult<ToDoItem>> GetByCreatorIdAsync(long userId, int pageNumber, int pageSize);
-        Task<PagedResult<ToDoItem>> GetByAssignedIdAsync(long userId, int pageNumber, int pageSize);
-        Task<PagedResult<ToDoItem>> SearchByTitleAsync(string title, int pageNumber, int pageSize);
+        Task<PagedResult<ToDoItem>> GetAllAsync(ToDoItemRequestParameters parameters);
 
         Task AddAsync(ToDoItem item);
         Task UpdateAsync(ToDoItem item);

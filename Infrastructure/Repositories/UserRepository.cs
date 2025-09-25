@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 
 namespace Infrastructure.Repositories
 {
@@ -34,20 +36,49 @@ namespace Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task<PagedResult<User>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PagedResult<User>> GetAllAsync(UserRequestParameters parameters)
         {
-            var totalCount = await _db.Users.CountAsync();
-            var items = await _db.Users
-                                 .Skip((pageNumber - 1) * pageSize)
-                                 .Take(pageSize)
+            var query = _db.Users.AsQueryable();
+            
+            if(parameters.InEmail.IsNullOrEmpty() == false)
+            {
+                query = query.Where(user => user.UserEmail.Contains(parameters.InEmail));
+            }
+
+            if (parameters.InUserName.IsNullOrEmpty() == false)
+            {
+                query = query.Where(user => user.UserEmail.Contains(parameters.InUserName));
+            }
+
+            if (parameters.Role.HasValue)
+            {
+                query = query.Where(user => user.Role==parameters.Role.Value);
+            }
+
+            if (parameters.SortedByNameAscending.HasValue 
+                && parameters.SortedByNameAscending.Value == true)
+            {
+                query = query.OrderBy(user => user.UserName);
+            }
+
+            if (parameters.SortedByNameAscending.HasValue
+                && parameters.SortedByNameAscending.Value == false)
+            {
+                query = query.OrderByDescending(user => user.UserName);
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                                 .Take(parameters.PageSize)
                                  .ToListAsync();
 
             return new PagedResult<User>
             {
                 Items = items,
                 TotalCount = totalCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize
+                PageNumber = parameters.PageNumber,
+                PageSize = parameters.PageSize
             };
         }
 
@@ -57,11 +88,6 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(user => user.Id == id);
         }
 
-        public async Task<User?> GetByUserNameAsync(string userName)
-        {
-            return await _db.Users
-                .FirstOrDefaultAsync(u => u.UserName == userName);
-        }
 
         public async Task SaveChangesAsync()
         {
