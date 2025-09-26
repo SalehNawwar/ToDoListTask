@@ -136,6 +136,7 @@ SQL Express runs inside a container on port `1433`.
 ---
 
 ## 🛠️ Notes
+- **Owner role account** has username "admin" and password "admin" to be able to test api you should login with these credentials
 - In **dev mode**, you can use SQL Server Express installed locally.  
 - In **Docker mode**, you can either connect to host SQL (`host.docker.internal`) or run SQL in a container with compose.  
 - Auto migrations on startup can be enabled in `Program.cs` with:
