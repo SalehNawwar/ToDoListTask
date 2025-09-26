@@ -42,17 +42,25 @@ namespace Infrastructure.Repositories
             
             if(parameters.InEmail.IsNullOrEmpty() == false)
             {
-                query = query.Where(user => user.UserEmail.Contains(parameters.InEmail));
+                query = query.Where(
+                    user => user
+                        .UserEmail
+                        .Contains(parameters.InEmail,StringComparison.OrdinalIgnoreCase)
+                );
             }
 
             if (parameters.InUserName.IsNullOrEmpty() == false)
             {
-                query = query.Where(user => user.UserEmail.Contains(parameters.InUserName));
+                query = query.Where(
+                    user => user
+                    .UserEmail
+                    .Contains(parameters.InUserName,StringComparison.OrdinalIgnoreCase)
+                );
             }
 
             if (parameters.Role.HasValue)
             {
-                query = query.Where(user => user.Role==parameters.Role.Value);
+                query = query.Where(user => user.Role == parameters.Role.Value);
             }
 
             if (parameters.SortedByNameAscending.HasValue 
@@ -98,6 +106,50 @@ namespace Infrastructure.Repositories
         {
             _db.Users.Update(user);
             return Task.CompletedTask;
+        }
+
+        public async Task<bool> ExistsByEmailAsync(string email)
+        {
+            return await _db.Users
+                .Where(
+                    user => user
+                        .UserEmail
+                        .Equals(email,StringComparison.OrdinalIgnoreCase)
+                )
+                .AnyAsync();
+        }
+
+        public async Task<bool> ExistsByUserNameAsync(string username)
+        {
+            return await _db.Users
+                .Where(
+                    user => user
+                        .UserName
+                        .Equals(username,StringComparison.OrdinalIgnoreCase)
+                )
+                .AnyAsync();
+        }
+
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _db.Users
+                .Where(
+                    user => user
+                        .UserEmail
+                        .Equals(email, StringComparison.OrdinalIgnoreCase)
+                )
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<User?> GetByUserNameAsync(string username)
+        {
+            return await _db.Users
+                .Where(
+                    user => user
+                        .UserName
+                        .Equals(username, StringComparison.OrdinalIgnoreCase)
+                )
+                .FirstOrDefaultAsync();
         }
     }
 }

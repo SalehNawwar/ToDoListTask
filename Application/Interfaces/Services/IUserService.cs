@@ -6,7 +6,7 @@ namespace Application.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<UserResponseDto?> GetByIdAsync(string id);
+        Task<UserResponseDto?> GetByIdAsync(long id);
 
         Task<PagedResult<UserResponseDto>> GetAllAsync(UserRequestParameters parameters);
 
@@ -14,6 +14,6 @@ namespace Application.Interfaces.Services
 
         Task UpdateAsync(UpdateUserDto dto);
 
-        Task DeleteAsync(string id);
+        Task DeleteAsync(long id);
     }
 }

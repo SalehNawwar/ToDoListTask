@@ -5,7 +5,7 @@ namespace Application.Interfaces.Services
 {
     public interface IToDoItemService
     {
-        Task<ToDoItemResponseDto?> GetByIdAsync(int id);
+        Task<ToDoItemResponseDto?> GetByIdAsync(long id);
 
         Task<PagedResult<ListingToDoItemResponseDto>> GetAllAsync(ToDoItemRequestParameters parameters);
 
@@ -13,7 +13,7 @@ namespace Application.Interfaces.Services
 
         Task UpdateAsync(UpdateToDoItemDto dto);
 
-        Task DeleteAsync(int id);
+        Task DeleteAsync(long id);
     }
 
 }

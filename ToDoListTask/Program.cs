@@ -1,6 +1,8 @@
+using Application.Interfaces.Security;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ToDoListTask.Helpers;
 
@@ -13,6 +15,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IPasswordHasher, IdentityPasswordHasher>();
 
 
 var app = builder.Build();

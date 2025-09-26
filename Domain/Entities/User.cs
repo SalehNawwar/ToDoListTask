@@ -12,7 +12,7 @@ namespace Domain.Entities
         public string UserName { get; set; } = null!;
         public string UserEmail { get; set; } = null!;
         public string UserPassword { get; set; } = null!;
-        public Roles Role { get; set; }
+        public Roles Role { get; set; } = Roles.Guest;
 
         public ICollection<ToDoItem> AssignedToDoItems { get; set; } = new List<ToDoItem>();
     }
