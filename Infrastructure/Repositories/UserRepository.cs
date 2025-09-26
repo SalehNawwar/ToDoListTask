@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories
         {
             var query = _db.Users.AsQueryable();
             
-            if(parameters.InEmail.IsNullOrEmpty() == false)
+            if(string.IsNullOrEmpty(parameters.InEmail) == false)
             {
                 query = query.Where(
                     user => user
@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
                 );
             }
 
-            if (parameters.InUserName.IsNullOrEmpty() == false)
+            if (string.IsNullOrEmpty(parameters.InUserName) == false)
             {
                 query = query.Where(
                     user => user
@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
                 .Where(
                     user => user
                         .UserEmail
-                        .Equals(email,StringComparison.OrdinalIgnoreCase)
+                        .Equals(email)
                 )
                 .AnyAsync();
         }
@@ -125,7 +125,7 @@ namespace Infrastructure.Repositories
                 .Where(
                     user => user
                         .UserName
-                        .Equals(username,StringComparison.OrdinalIgnoreCase)
+                        .Equals(username)
                 )
                 .AnyAsync();
         }
@@ -136,7 +136,7 @@ namespace Infrastructure.Repositories
                 .Where(
                     user => user
                         .UserEmail
-                        .Equals(email, StringComparison.OrdinalIgnoreCase)
+                        .Equals(email)
                 )
                 .FirstOrDefaultAsync();
         }
@@ -147,7 +147,7 @@ namespace Infrastructure.Repositories
                 .Where(
                     user => user
                         .UserName
-                        .Equals(username, StringComparison.OrdinalIgnoreCase)
+                        .Equals(username)
                 )
                 .FirstOrDefaultAsync();
         }

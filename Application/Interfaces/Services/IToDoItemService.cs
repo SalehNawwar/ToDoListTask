@@ -9,9 +9,9 @@ namespace Application.Interfaces.Services
 
         Task<PagedResult<ListingToDoItemResponseDto>> GetAllAsync(ToDoItemRequestParameters parameters);
 
-        Task<ToDoItemResponseDto> CreateAsync(CreateToDoItemDto dto);
+        Task<ToDoItemResponseDto> CreateAsync(long userId, CreateToDoItemDto dto);
 
-        Task UpdateAsync(UpdateToDoItemDto dto);
+        Task UpdateAsync(long userId, UpdateToDoItemDto dto);
 
         Task DeleteAsync(long id);
     }

@@ -37,19 +37,19 @@ namespace Infrastructure.Repositories
         {
             var query = _db.ToDoItems.AsQueryable();
 
-            if(parameters.UserAssignedId.HasValue)
+            if (parameters.UserAssignedId.HasValue)
             {
                 query = query.Where(item => item.AssignedToUserId == parameters.UserAssignedId.Value);
             }
 
             if (parameters.IsCompleted.HasValue)
             {
-                query = query.Where(item => item.IsCompleted ==  parameters.IsCompleted.Value);
+                query = query.Where(item => item.IsCompleted == parameters.IsCompleted.Value);
             }
 
             if (parameters.PriorityLevel.HasValue)
             {
-                query = query.Where(item=>item.PriorityLevel == parameters.PriorityLevel.Value);
+                query = query.Where(item => item.PriorityLevel == parameters.PriorityLevel.Value);
             }
 
             if (parameters.From.HasValue)
@@ -62,14 +62,14 @@ namespace Infrastructure.Repositories
                 query = query.Where(item => item.DueDate <= parameters.To.Value);
             }
 
-            if (parameters.Title.IsNullOrEmpty() == false)
+            if (string.IsNullOrEmpty(parameters.Title)==false)
             {
-                query = query.Where(item => item.Title == parameters.Title);
+                query = query.Where(item => item.Title.Contains(parameters.Title));
             }
 
-            if (parameters.Description.IsNullOrEmpty() == false)
+            if (string.IsNullOrEmpty(parameters.Description) == false)
             {
-                query = query.Where(item => item.Description == parameters.Description);
+                query = query.Where(item => string.IsNullOrEmpty(item.Description) ? false : item.Description.Contains(parameters.Description));
             }
 
             switch (parameters.SortingParameter)
@@ -92,11 +92,17 @@ namespace Infrastructure.Repositories
                 case SortingParameters.ByPriorityLevelDescending:
                     query = query.OrderByDescending(item => item.PriorityLevel);
                     break;
+                case SortingParameters.ByDueDateAscending:
+                    query = query.OrderBy(item => item.DueDate);
+                    break;
+                case SortingParameters.ByDueDateDescending:
+                    query = query.OrderByDescending(item=>item.DueDate);
+                    break;
             }
 
-            var totalCount = await _db.ToDoItems.CountAsync();
+            var totalCount = await query.CountAsync();
 
-            var items = await _db.ToDoItems
+            var items = await query
                                  .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                                  .Take(parameters.PageSize)
                                  .ToListAsync();

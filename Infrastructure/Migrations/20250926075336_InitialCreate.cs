@@ -12,7 +12,7 @@ namespace Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -26,7 +26,7 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,7 +38,7 @@ namespace Infrastructure.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PriorityLevel = table.Column<int>(type: "int", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedByUserId = table.Column<long>(type: "bigint", nullable: true),
                     UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -50,19 +50,19 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_ToDoItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ToDoItems_User_AssignedToUserId",
+                        name: "FK_ToDoItems_Users_AssignedToUserId",
                         column: x => x.AssignedToUserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ToDoItems_User_CreatedByUserId",
+                        name: "FK_ToDoItems_Users_CreatedByUserId",
                         column: x => x.CreatedByUserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ToDoItems_User_UpdatedByUserId",
+                        name: "FK_ToDoItems_Users_UpdatedByUserId",
                         column: x => x.UpdatedByUserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -89,7 +89,7 @@ namespace Infrastructure.Migrations
                 name: "ToDoItems");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
         }
     }
 }

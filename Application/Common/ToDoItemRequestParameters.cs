@@ -15,8 +15,8 @@ namespace Application.Common
     }
     public class ToDoItemRequestParameters : RequestParameters
     {
-        public string Title { get; set; } = string.Empty;
-        public string Description {  get; set; } = string.Empty;
+        public string? Title { get; set; } = string.Empty;
+        public string? Description {  get; set; } = string.Empty;
         public long? UserAssignedId { get; set; }
         public bool? IsCompleted { get; set; }
         public PriorityLevels? PriorityLevel { get; set; }

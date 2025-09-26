@@ -5,6 +5,7 @@ using Application.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Application.Mapping;
+using Application.Validators;
 using Domain.Entities;
 using Domain.Enums;
 using System;
@@ -18,12 +19,10 @@ namespace Application.Services
     public class ToDoItemService : IToDoItemService
     {
         private readonly IToDoItemRepository _todoRepository;
-        private readonly IUserRepository _userRepository;
 
-        public ToDoItemService(IToDoItemRepository todoRepository, IUserRepository userRepository)
+        public ToDoItemService(IToDoItemRepository todoRepository)
         {
             _todoRepository = todoRepository;
-            _userRepository = userRepository;
         }
 
         public async Task<ToDoItemResponseDto?> GetByIdAsync(long id)
@@ -48,18 +47,14 @@ namespace Application.Services
             };
         }
 
-        public async Task<ToDoItemResponseDto> CreateAsync(CreateToDoItemDto toDoItemDto)
+        public async Task<ToDoItemResponseDto> CreateAsync(long userId,CreateToDoItemDto toDoItemDto)
         {
-            //var user = await _userRepository.GetByIdAsync(userDto.Id);
-
-            //if (user == null)
-            //    throw new EntityNotFoundException(nameof(User), userDto.Id);
-            User user = null!; // must come from auth
+            Validator.Validate(new CreateToDoItemDtoValidator(), toDoItemDto);
 
             ToDoItem item = toDoItemDto.ToToDoItem();
-
-            item.CreatedByUserId = user.Id;
-            item.UpdatedByUserId = user.Id;
+            
+            item.CreatedByUserId = userId;
+            item.UpdatedByUserId = userId;
 
             item.CreatedAt = DateTime.Now;
             item.UpdatedAt = DateTime.Now;
@@ -70,24 +65,35 @@ namespace Application.Services
             return item.ToToDoItemResponseDto();
         }
 
-        public async Task UpdateAsync(UpdateToDoItemDto dto)
+        
+        public async Task UpdateAsync(long userId,UpdateToDoItemDto dto)
         {
-            User user = null!;// comes from auth
+            Validator.Validate(new UpdateToDoItemDtoValidator(), dto);
 
             var item = await _todoRepository.GetByIdAsync(dto.Id);
             if (item == null)
                 throw new EntityNotFoundException(nameof(ToDoItem), dto.Id);
 
-            item.Title = dto.Title;
+            if(string.IsNullOrEmpty(dto.Title)==false)
+                item.Title = dto.Title;
 
-            item.Description = dto.Description;
+            if(string.IsNullOrEmpty(dto.Description)==false)
+                item.Description = dto.Description;
 
-            item.DueDate = dto.DueDate;
+            if(dto.DueDate.HasValue)
+                item.DueDate = dto.DueDate.Value;
 
-            item.PriorityLevel = dto.PriorityLevel;
+            if(dto.PriorityLevel.HasValue)
+                item.PriorityLevel = dto.PriorityLevel.Value;
+
+            if (dto.IsCompleted.HasValue)
+                item.IsCompleted = dto.IsCompleted.Value;
+
+            if (dto.AssignedToUserId.HasValue)
+                item.AssignedToUserId = dto.AssignedToUserId.Value;
 
             item.UpdatedAt = DateTime.Now;
-            item.UpdatedByUserId = user.Id;
+            item.UpdatedByUserId = userId;
 
             await _todoRepository.UpdateAsync(item);
             await _todoRepository.SaveChangesAsync();

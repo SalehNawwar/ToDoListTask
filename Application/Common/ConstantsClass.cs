@@ -8,6 +8,13 @@ namespace Application.Common
 {
     public static class ConstantsClass
     {
+        // for max characters
+        public const int maxLengthCharsGeneral = 200;
+        public const int maxLengthCharsDescription = 2000;
+        
+        public const int maxLengthCharsPassword = 512;
+        public const int minLengthCharsPassword = 8;
+        
         // for pagination
         public const int maxPageSize = 50;
 
@@ -26,7 +33,8 @@ namespace Application.Common
         public const string dueDateInPastMessage = "Due Date should be at least 1 day ahead";
         public const string negativeIdMessage = "Identifier should be positive";
         public const string emailMessage = "the email is not valid";
-
+        public const string shortPasswordMessage = "the password should be at least 8 characters";
+        public const string longPasswordMessage = "the password is too long";
 
     }
 }

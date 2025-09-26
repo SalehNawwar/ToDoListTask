@@ -3,6 +3,7 @@ using Application.DTOs.UserDtos;
 using Application.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Application.Validators;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -69,8 +70,9 @@ namespace Application.Services
                 UserEmail = dto.UserEmail,
                 Role = dto.Role,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-                // Password hashing is handled separately (AuthService)
+                UpdatedAt = DateTime.Now,
+                // Password hashing is handled separately (AuthService) you should register
+                UserPassword = dto.UserPassword,
             };
 
             await _userRepository.AddAsync(user);
@@ -87,11 +89,14 @@ namespace Application.Services
 
         public async Task UpdateAsync(UpdateUserDto dto)
         {
+            Validator.Validate(new UpdateUserDtoValidator(), dto);
+
             var user = await _userRepository.GetByIdAsync(dto.Id);
             if (user == null)
                 throw new EntityNotFoundException(nameof(User), dto.Id);
             
-            if (dto.UserEmail != user.UserEmail)
+            if (string.IsNullOrEmpty(dto.UserEmail)==false 
+                && dto.UserEmail != user.UserEmail)
             {
                 if (await _userRepository.ExistsByEmailAsync(dto.UserEmail))
                     throw new DuplicateEmailException(dto.UserEmail);
@@ -99,13 +104,17 @@ namespace Application.Services
                 user.UserEmail = dto.UserEmail;
             }
 
-            if (dto.UserName != user.UserName)
+            if (string.IsNullOrEmpty(dto.UserName)==false 
+                && dto.UserName != user.UserName)
             {
                 if (await _userRepository.ExistsByUserNameAsync(dto.UserName))
                     throw new DuplicateUserNameException(dto.UserName);
 
                 user.UserName = dto.UserName;
             }
+
+            if (dto.Role.HasValue)
+                user.Role = dto.Role.Value;
 
             user.UpdatedAt = DateTime.Now;
 

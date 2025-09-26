@@ -13,7 +13,7 @@ namespace Application.Validators
             RuleFor(user=>user.UserName)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage(ConstantsClass.usernameRequiredMessage)
-                .MaximumLength(100).WithMessage(ConstantsClass.usernameMaxLengthMessage)
+                .MaximumLength(ConstantsClass.maxLengthCharsGeneral).WithMessage(ConstantsClass.usernameMaxLengthMessage)
                 .Matches(ConstantsClass.alphanumRule).WithMessage(ConstantsClass.alphanumMessage);
 
             RuleFor(user => user.Id)

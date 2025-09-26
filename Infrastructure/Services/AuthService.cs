@@ -4,6 +4,7 @@ using Application.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Security;
 using Application.Interfaces.Services;
+using Application.Validators;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Extensions.Configuration;
@@ -42,6 +43,9 @@ namespace Infrastructure.Services
 
         public async Task RegisterAsync(RegisterDto dto)
         {
+
+            Validator.Validate(new RegisterDtoValidator(), dto);
+
             if (await _userRepository.ExistsByEmailAsync(dto.Email))
                 throw new DuplicateEmailException(dto.Email);
 
@@ -91,7 +95,7 @@ namespace Infrastructure.Services
             {
                 new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, nameof(user.Role))
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
