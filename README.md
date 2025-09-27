@@ -75,8 +75,13 @@ docker run -d -p 5000:80 \
 Access at 👉 [http://localhost:5000/swagger](http://localhost:5000/swagger)  
 
 ---
+### Option B: Run API + SQL Server together From DockerHub (recommended, with docker-compose)
+1. Open DockerHub folder and run `docker compose up`
+2. this will load the project from dockerhub and run by default on port 8080 map a port to it
+3. open browser on http://localhost:<your-port>/swagger/index
+4. voala
 
-### Option B: Run API + SQL Server together (recommended, with docker-compose)
+### Option C: Run API + SQL Server together (recommended, with docker-compose)
 
 1. Create `docker-compose.yml` (already in repo):  
    ```yaml
@@ -102,7 +107,7 @@ Access at 👉 [http://localhost:5000/swagger](http://localhost:5000/swagger)
          - ConnectionStrings__DefaultConnection=Server=sql-express;Database=TodoAppDb;User Id=sa;Password=YourStrong!Pass123;TrustServerCertificate=True;
          - ASPNETCORE_ENVIRONMENT=Development
        ports:
-         - "5000:80"
+         - "8080:8080"
        depends_on:
          - sql-express
 

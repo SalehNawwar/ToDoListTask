@@ -13,9 +13,6 @@ services:
 
   todoapp-api:
     image: salehnawar/todolisttask-api:2.0
-    build:
-      context: .
-      dockerfile: ToDoListTask/Dockerfile
     container_name: todoapp-api
     environment:
       - ConnectionStrings__DefaultConnection=Server=sql-express;Database=TodoAppDb;User Id=sa;Password=YourStrong!Pass123;TrustServerCertificate=True;
