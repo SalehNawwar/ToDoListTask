@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   sql-express:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -16,13 +14,14 @@ services:
   todoapp-api:
     build:
       context: .
-      dockerfile: TodoApp.API/Dockerfile
+      dockerfile: ToDoListTask/Dockerfile
     container_name: todoapp-api
     environment:
       - ConnectionStrings__DefaultConnection=Server=sql-express;Database=TodoAppDb;User Id=sa;Password=YourStrong!Pass123;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5000:80"   # API exposed on http://localhost:5000
+      - "8080:8080"   # API exposed on http://localhost:8080
+      
     depends_on:
       - sql-express
 

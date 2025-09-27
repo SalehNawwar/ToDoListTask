@@ -145,6 +145,7 @@ app.UseExceptionHandler(errorApp =>
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ToDoListDBContext>();
+    db.Database.Migrate();
     DbSeeder.Seed(db);
 }
 
